@@ -4,7 +4,7 @@ import { ZodUtil } from "../src/classes/zod_util";
 describe(
     "ZodUtil",
     () => {
-        const uniqueArraySchema = ZodUtil.uniqueArray(z.enum(["a", "b", "c"]));
+        const uniqueArraySchema = ZodUtil.uniqueArray(z.array(z.enum(["a", "b", "c"])));
         
         it(
             "Successfully parse a truly unique array.",

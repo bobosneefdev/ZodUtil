@@ -36,11 +36,11 @@ export class ZodUtil {
     }
 
     /** Creates an array schema with preset refinement ensuring all elements are unique. */
-    static uniqueArray<T extends UniqueArrayCompatibleSchema>(elementSchema: T) {
-        return z.array(elementSchema).refine(
+    static uniqueArray<T extends z.ZodArray<UniqueArrayCompatibleSchema, any>>(arraySchema: T) {
+        return arraySchema.refine(
             this.refineUniqueArray,
             "Duplicate values found in unique array.",
-        ) as z.ZodEffects<z.ZodArray<T>>;
+        ) as z.ZodEffects<T>;
     }
 
     /** Refines an array schema to be unique. */
