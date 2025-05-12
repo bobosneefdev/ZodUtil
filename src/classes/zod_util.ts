@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ZodFirstPartyTypeMap } from "../types";
 
 type UniqueArrayCompatibleSchema =
     | z.ZodEnum<any>
@@ -76,9 +77,10 @@ export class ZodUtil {
     }
 
     /** @returns boolean of whether the provided schema is of a given type. */
-    static isSchemaOfType<T extends z.ZodTypeAny>(schema: T, type: z.ZodFirstPartyTypeKind | Array<z.ZodFirstPartyTypeKind>) {
-        return Array.isArray(type) ?
-            type.includes(schema._def.typeName) :
-            schema._def.typeName === type;
+    static isSchemaOfType<K extends z.ZodFirstPartyTypeKind>(
+        schema: z.ZodTypeAny,
+        type: K
+    ): schema is ZodFirstPartyTypeMap[K] {
+        return schema._def.typeName === type;
     }
 }
