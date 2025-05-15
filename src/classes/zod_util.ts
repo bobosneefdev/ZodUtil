@@ -1,13 +1,6 @@
 import { z } from "zod";
 import { ZodFirstPartyTypeMap } from "../types";
 
-type UniqueArrayCompatibleSchema =
-    | z.ZodEnum<any>
-    | z.ZodNativeEnum<any>
-    | z.ZodString
-    | z.ZodNumber
-    | z.ZodBoolean;
-
 export class ZodUtil {
     /**
      * Create a Zod object where all values of an enum or string union are required.
@@ -21,7 +14,7 @@ export class ZodUtil {
         keys: Record<string, T> | Array<T>,
         value: V
     ): z.ZodObject<{ [K in T]: V }> {
-        let keyArray;
+        let keyArray: Array<T>;
         if (Array.isArray(keys)) {
             keyArray = keys;
         }
@@ -36,7 +29,7 @@ export class ZodUtil {
     }
 
     /** Creates an array schema with preset refinement ensuring all elements are unique. */
-    static uniqueArray<T extends z.ZodArray<UniqueArrayCompatibleSchema, any>>(arraySchema: T) {
+    static uniqueArray<T extends z.ZodArray<z.ZodTypeAny>>(arraySchema: T) {
         return arraySchema.refine(
             this.refineUniqueArray,
             "Duplicate values found in unique array.",
