@@ -3,11 +3,26 @@ import { z } from "zod";
 
 describe("ZodEnv", () => {
     const env = new ZodEnv({
-        BOOLEAN_TEST: z.boolean(),
-        STRING_TEST: z.string(),
-        ENUM_TEST: z.enum(["a", "b", "c"]),
-        OPTIONAL_TEST: z.boolean().optional(),
-        DEFAULT_TEST: z.string().default("defaultstring"),
+        BOOLEAN_TEST: {
+            schema: z.boolean(),
+            type: "throwOnUsage"
+        },
+        STRING_TEST: {
+            schema: z.string(),
+            type: "throwOnUsage"
+        },
+        ENUM_TEST: {
+            schema: z.enum(["a", "b", "c"]),
+            type: "throwOnUsage"
+        },
+        OPTIONAL_TEST: {
+            schema: z.boolean().optional(),
+            type: "throwOnUsage"
+        },
+        DEFAULT_TEST: {
+            schema: z.string().default("defaultstring"),
+            type: "throwOnStartup"
+        },
     });
 
     it("Verify environment variables", () => {
