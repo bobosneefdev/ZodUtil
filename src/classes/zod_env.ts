@@ -23,26 +23,26 @@ export type ZodEnvSchemaConfig = {
     type: ZodEnvSchemaType
 }
 
-export type ZodEnvSchemaRecord = Record<string, ZodEnvSchemaConfig>;
+export type ZodEnvSchemaConfigRecord = Record<string, ZodEnvSchemaConfig>;
 
-type ZodEnvInferredSchemaRecord<T extends ZodEnvSchemaRecord> = {
+type ZodEnvInferredSchemaRecord<T extends ZodEnvSchemaConfigRecord> = {
     [K in keyof T]: z.infer<T[K]["schema"]>
 };
 
-export class ZodEnv<T extends ZodEnvSchemaRecord> {
-    readonly schemas: T;
+export class ZodEnv<T extends ZodEnvSchemaConfigRecord> {
+    readonly configRecord: T;
     private readonly cache: Record<string, any>;
 
-    constructor(schemas: T) {
-        this.schemas = schemas;
+    constructor(configRecord: T) {
+        this.configRecord = configRecord;
         this.cache = {};
 
         const errorStrs: string[] = [];
-        for (const [key, schema] of Object.entries(schemas)) {
-            if (schema.type === "throwOnUsage") {
+        for (const [key, config] of Object.entries(this.configRecord)) {
+            if (config.type === "throwOnUsage") {
                 continue;
             }
-            const errorStr = this.addValueToCache(key, schema);
+            const errorStr = this.addValueToCache(key);
             if (errorStr) {
                 errorStrs.push(errorStr);
             }
@@ -52,8 +52,8 @@ export class ZodEnv<T extends ZodEnvSchemaRecord> {
         }
     }
 
-    private addValueToCache(key: string, config: ZodEnvSchemaConfig) {
-        const unwrappedSchema = ZodUtil.unwrapSchema(config.schema);
+    private addValueToCache(key: keyof T & string) {
+        const unwrappedSchema = ZodUtil.unwrapSchema(this.configRecord[key].schema);
         let value: string | number | boolean | undefined = process.env[key];
         if (ZodUtil.isSchemaOfType(unwrappedSchema, z.ZodFirstPartyTypeKind.ZodBoolean)) {
             value = this.convertBoolean(value);
@@ -61,7 +61,7 @@ export class ZodEnv<T extends ZodEnvSchemaRecord> {
         else if (ZodUtil.isSchemaOfType(unwrappedSchema, z.ZodFirstPartyTypeKind.ZodNumber)) {
             value = this.convertNumber(value);
         }
-        const safeParsed = config.schema.safeParse(value);
+        const safeParsed = this.configRecord[key].schema.safeParse(value);
         if (!safeParsed.success) {
             return `Environment variable "${key}" is not set or is invalid: ${safeParsed.error.message}`;
         }
@@ -98,7 +98,7 @@ export class ZodEnv<T extends ZodEnvSchemaRecord> {
 
     get<K extends keyof T & string>(key: K): ZodEnvInferredSchemaRecord<T>[K] {
         if (!this.cache[key]) {
-            const errorStr = this.addValueToCache(key, this.schemas[key]);
+            const errorStr = this.addValueToCache(key);
             if (errorStr) {
                 throw new Error(errorStr);
             }

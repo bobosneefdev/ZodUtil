@@ -53,13 +53,13 @@ export class ZodUtil {
         let result = schema;
         while (true) {
             if (
-                result._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional ||
-                result._def.typeName === z.ZodFirstPartyTypeKind.ZodNullable ||
-                result._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault
+                ZodUtil.isSchemaOfType(result, z.ZodFirstPartyTypeKind.ZodOptional) ||
+                ZodUtil.isSchemaOfType(result, z.ZodFirstPartyTypeKind.ZodNullable) ||
+                ZodUtil.isSchemaOfType(result, z.ZodFirstPartyTypeKind.ZodDefault)
             ) {
                 result = result._def.innerType;
             }
-            else if (result._def.typeName === z.ZodFirstPartyTypeKind.ZodEffects) {
+            else if (ZodUtil.isSchemaOfType(result, z.ZodFirstPartyTypeKind.ZodEffects)) {
                 result = result._def.schema;
             }
             else {
