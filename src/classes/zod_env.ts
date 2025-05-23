@@ -25,10 +25,6 @@ export type ZodEnvSchemaConfig = {
 
 export type ZodEnvSchemaConfigRecord = Record<string, ZodEnvSchemaConfig>;
 
-type ZodEnvInferredSchemaRecord<T extends ZodEnvSchemaConfigRecord> = {
-    [K in keyof T]: z.infer<T[K]["schema"]>
-};
-
 export class ZodEnv<T extends ZodEnvSchemaConfigRecord> {
     readonly configRecord: T;
     private readonly cache: Record<string, any>;
@@ -52,6 +48,7 @@ export class ZodEnv<T extends ZodEnvSchemaConfigRecord> {
         }
     }
 
+    /** Returns an error string if one exists, null on success. */
     private addValueToCache(key: keyof T & string) {
         const unwrappedSchema = ZodUtil.unwrapSchema(this.configRecord[key].schema);
         let value: string | number | boolean | undefined = process.env[key];
@@ -96,7 +93,7 @@ export class ZodEnv<T extends ZodEnvSchemaConfigRecord> {
         }
     }
 
-    get<K extends keyof T & string>(key: K): ZodEnvInferredSchemaRecord<T>[K] {
+    get<K extends keyof T & string>(key: K): z.infer<T[K]["schema"]> {
         if (!this.cache[key]) {
             const errorStr = this.addValueToCache(key);
             if (errorStr) {
