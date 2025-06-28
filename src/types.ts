@@ -38,3 +38,5 @@ export type ZodFirstPartyTypeMap = {
     [z.ZodFirstPartyTypeKind.ZodUnknown]: z.ZodUnknown,
     [z.ZodFirstPartyTypeKind.ZodVoid]: z.ZodVoid,
 }
+
+export type ZodTypePossiblyWrappedInEffects<T extends z.ZodTypeAny> = T | z.ZodEffects<ZodTypePossiblyWrappedInEffects<T>, any, any>;
