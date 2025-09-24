@@ -1,6 +1,7 @@
 import z from "zod"
 import { ZodPossiblyDefault, ZodPossiblyOptional, ZodStringLike } from "../types"
 import env from "dotenv";
+env.config();
 
 export class ZodEnv<T extends ZodEnvOptions> {
     readonly options: T;
