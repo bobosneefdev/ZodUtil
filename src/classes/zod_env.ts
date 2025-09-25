@@ -1,5 +1,4 @@
 import z from "zod"
-import { ZodPossiblyDefault, ZodPossiblyOptional, ZodStringLike } from "../types"
 import env from "dotenv";
 env.config();
 
@@ -43,9 +42,20 @@ export type ZodEnvOptions = {
     definitions: Record<string, ZodEnvDefinition>,
 }
 
-export type ZodEnvDefinitionDefault = ZodPossiblyDefault<ZodStringLike> | ZodPossiblyOptional<ZodStringLike>;
+export type ZodEnvValueSchemaBase =
+    z.ZodString |
+    z.ZodNumber |
+    z.ZodEnum<Record<any, string | number>> |
+    z.ZodLiteral<string | number> |
+    z.coerce.ZodCoercedBoolean |
+    z.coerce.ZodCoercedNumber;
 
-export type ZodEnvDefinition<T extends ZodEnvDefinitionDefault = ZodEnvDefinitionDefault> = {
+export type ZodEnvValueSchema =
+    ZodEnvValueSchemaBase |
+    z.ZodOptional<ZodEnvValueSchemaBase> |
+    z.ZodDefault<ZodEnvValueSchemaBase>;
+
+export type ZodEnvDefinition<T extends ZodEnvValueSchema = ZodEnvValueSchema> = {
     schema: T,
     type: "parseAtStartup" | "parseOnUsage",
     defaultValue?: NonNullable<z.infer<T>>,
