@@ -18,7 +18,7 @@ export class ZodEnv<T extends ZodEnvOptions> {
         }
     }
 
-    get<K extends keyof T["definitions"] & string>(key: K, options?: { bypassCache?: boolean }) {
+    get<K extends keyof T["definitions"] & string>(key: K, options?: { bypassCache?: boolean }): z.infer<T["definitions"][K]["schema"]> {
         if (!options?.bypassCache && this.cache[key]) {
             return this.cache[key];
         }
@@ -27,14 +27,14 @@ export class ZodEnv<T extends ZodEnvOptions> {
         return value;
     }
 
-    private parseValue(key: keyof T["definitions"] & string) {
+    private parseValue<K extends keyof T["definitions"] & string>(key: K): z.infer<T["definitions"][K]["schema"]> {
         const definition = this.options.definitions[key];
         const value = process.env[key] ?? definition.defaultValue;
         const parse = definition.schema.safeParse(value);
         if (!parse.success) {
             throw new Error(`Failed to parse environment variable "${key}": ${JSON.stringify(parse.error.issues, null, 2)}`);
         }
-        return parse.data;
+        return parse.data as z.infer<T["definitions"][K]["schema"]>;
     }
 }
 
