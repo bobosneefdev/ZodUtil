@@ -32,7 +32,7 @@ export class ZodEnv<T extends ZodEnvOptions> {
         const value = process.env[key] ?? definition.defaultValue;
         const parse = definition.schema.safeParse(value);
         if (!parse.success) {
-            throw new Error(`Failed to parse environment variable "${key}": ${parse.error.issues}`);
+            throw new Error(`Failed to parse environment variable "${key}": ${JSON.stringify(parse.error.issues, null, 2)}`);
         }
         return parse.data;
     }
