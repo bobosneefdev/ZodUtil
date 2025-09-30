@@ -42,13 +42,13 @@ export type ZodEnvOptions = {
     definitions: Record<string, ZodEnvDefinition>,
 }
 
+export type PossibleZodPipe<T extends z.ZodType> = T | z.ZodPipe<T>;
+
 export type ZodEnvValueSchemaBase =
-    z.ZodString |
-    z.ZodNumber |
-    z.ZodEnum<Record<any, string | number>> |
-    z.ZodLiteral<string | number> |
-    z.coerce.ZodCoercedBoolean |
-    z.coerce.ZodCoercedNumber;
+    z.ZodType<string> |
+    PossibleZodPipe<z.ZodCoercedNumber<string>> |
+    PossibleZodPipe<z.ZodCoercedBoolean<string>> |
+    z.coerce.ZodCoercedDate<string>;
 
 export type ZodEnvValueSchema =
     ZodEnvValueSchemaBase |

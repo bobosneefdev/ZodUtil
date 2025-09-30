@@ -5,7 +5,7 @@ describe("ZodEnv", () => {
     const env = new ZodEnv({
         definitions: {
             BOOLEAN_TEST: {
-                schema: z.coerce.boolean(),
+                schema: z.coerce.boolean<string>(),
                 type: "parseOnUsage"
             },
             STRING_TEST: {
@@ -17,7 +17,7 @@ describe("ZodEnv", () => {
                 type: "parseOnUsage"
             },
             OPTIONAL_TEST: {
-                schema: z.boolean().optional(),
+                schema: z.coerce.boolean<string>().optional(),
                 type: "parseOnUsage"
             },
             DEFAULT_TEST: {
