@@ -6,9 +6,9 @@ export class ZodEnv<T extends ZodEnvOptions> {
 
     constructor(
         options: T,
-        inject?: () => void,
+        inject?: ZodEnvInjection<T>,
     ) {
-        inject?.();
+        if (inject) this.inject(inject);
         this.options = options;
         this.cache = {};
 
@@ -32,6 +32,14 @@ export class ZodEnv<T extends ZodEnvOptions> {
         return value;
     }
 
+    private inject(inject: ZodEnvInjection<T>) {
+        for (const [key, value] of Object.entries(inject)) {
+            if (value === undefined) continue;
+            const str = String(value);
+            process.env[key] = str;
+        }
+    }
+
     private parseValue<K extends keyof T["definitions"] & string>(key: K): z.infer<T["definitions"][K]["schema"]> {
         const definition = this.options.definitions[key];
         const value = process.env[key] ?? definition.defaultValue;
@@ -42,6 +50,10 @@ export class ZodEnv<T extends ZodEnvOptions> {
         return parse.data as z.infer<T["definitions"][K]["schema"]>;
     }
 }
+
+export type ZodEnvInjection<T extends ZodEnvOptions> = {
+    [K in keyof T["definitions"] & string]?: z.infer<T["definitions"][K]["schema"]>;
+};
 
 export type ZodEnvOptions = {
     definitions: Record<string, ZodEnvDefinition>,
