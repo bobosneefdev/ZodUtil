@@ -35,6 +35,7 @@ export class ZodEnv<T extends ZodEnvOptions> {
     inject(inject: ZodEnvInjection<T>) {
         for (const [key, value] of Object.entries(inject)) {
             if (value === undefined) continue;
+            delete this.cache[key];
             const str = String(value);
             process.env[key] = str;
         }
