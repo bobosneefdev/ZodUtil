@@ -1,12 +1,14 @@
 import z from "zod"
-import env from "dotenv";
-env.config();
 
 export class ZodEnv<T extends ZodEnvOptions> {
     readonly options: T;
     private cache: Record<string, any>;
 
-    constructor(options: T) {
+    constructor(
+        options: T,
+        inject?: () => void,
+    ) {
+        inject?.();
         this.options = options;
         this.cache = {};
 
@@ -18,7 +20,10 @@ export class ZodEnv<T extends ZodEnvOptions> {
         }
     }
 
-    get<K extends keyof T["definitions"] & string>(key: K, options?: { bypassCache?: boolean }): z.infer<T["definitions"][K]["schema"]> {
+    get<K extends keyof T["definitions"] & string>(
+        key: K,
+        options?: { bypassCache?: boolean }
+    ): z.infer<T["definitions"][K]["schema"]> {
         if (!options?.bypassCache && this.cache[key]) {
             return this.cache[key];
         }

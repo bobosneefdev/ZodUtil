@@ -7,4 +7,5 @@ export default defineConfig({
     shims: true,
     skipNodeModulesBundle: true,
     clean: true,
+    platform: "neutral", // Make it work in both Node.js and browser
 });
