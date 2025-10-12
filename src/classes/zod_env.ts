@@ -32,7 +32,7 @@ export class ZodEnv<T extends ZodEnvOptions> {
         return value;
     }
 
-    private inject(inject: ZodEnvInjection<T>) {
+    inject(inject: ZodEnvInjection<T>) {
         for (const [key, value] of Object.entries(inject)) {
             if (value === undefined) continue;
             const str = String(value);
