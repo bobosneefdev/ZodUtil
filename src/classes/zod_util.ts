@@ -13,6 +13,6 @@ export class ZodUtil {
                 return true;
             },
             "Duplicate values found in unique array."
-        );
+        ).describe("##uniqueItems");
     }
 }
