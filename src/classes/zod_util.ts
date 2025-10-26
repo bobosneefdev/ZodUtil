@@ -3,7 +3,7 @@ import { z } from "zod";
 export class ZodUtil {
     /** Creates an array schema with preset refinement ensuring all elements are unique. */
     static uniqueArray<T extends z.ZodArray<z.ZodTypeAny>>(arraySchema: T) {
-        return arraySchema.refine(
+        return arraySchema.describe("##uniqueItems").refine(
             (array) => {
                 const seen = new Set();
                 for (const value of array) {
@@ -13,6 +13,6 @@ export class ZodUtil {
                 return true;
             },
             "Duplicate values found in unique array."
-        ).describe("##uniqueItems");
+        );
     }
 }
